@@ -7,11 +7,13 @@ import uuid
 import boto3
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 S3_BASE_URL='https://s3-us-west-2.amazonaws.com/'
 BUCKET='finch-collector-django'
 
-class FinchCreate(CreateView):
+class FinchCreate(LoginRequiredMixin, CreateView):
   model = Finch
   fields = ['name', 'breed', 'description', 'age']
   def form_valid(self, form):
@@ -34,6 +36,7 @@ def home(request):
 def about(request):
   return render(request, 'about.html')
 
+@login_required
 def finchees_index(request):
   # finchees = Finch.objects.all()
   finchees = Finch.objects.filter(user=request.user)
@@ -41,9 +44,11 @@ def finchees_index(request):
 
 def finchees_detail(request, finch_id):
   finch = Finch.objects.get(id=finch_id)
+  toys_finch_doesnt_have = Toy.objects.exclude(id__in = finch.toys.all().values_list('id'))
   feeding_form = FeedingForm()
   return render(request, 'finchees/detail.html', {
-    'finch': finch, 'feeding_form': feeding_form, 
+    'finch': finch, 'feeding_form': feeding_form,
+    'toys': toys_finch_doesnt_have 
   })
 
 def add_feeding(request, finch_id):
