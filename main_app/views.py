@@ -5,6 +5,8 @@ from .models import Finch, Toy, Photo
 from .forms import FeedingForm
 import uuid
 import boto3
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
 
 S3_BASE_URL='https://s3-us-west-2.amazonaws.com/'
 BUCKET='finch-collector-django'
@@ -12,6 +14,11 @@ BUCKET='finch-collector-django'
 class FinchCreate(CreateView):
   model = Finch
   fields = ['name', 'breed', 'description', 'age']
+  def form_valid(self, form):
+    # Assign the logged in user (self.request.user)
+    form.instance.user = self.request.user  # form.instance is the cat
+    # Let the CreateView do its job as usual
+    return super().form_valid(form)
 
 class FinchUpdate(UpdateView):
   model = Finch
@@ -28,7 +35,8 @@ def about(request):
   return render(request, 'about.html')
 
 def finchees_index(request):
-  finchees = Finch.objects.all()
+  # finchees = Finch.objects.all()
+  finchees = Finch.objects.filter(user=request.user)
   return render(request, 'finchees/index.html', { 'finchees': finchees })
 
 def finchees_detail(request, finch_id):
@@ -82,3 +90,17 @@ def add_photo(request, finch_id):
         except:
             print('An error occurred uploading file to S3')
     return redirect('detail', finch_id=finch_id)
+
+def signup(request):
+  error_message = ''
+  if request.method == 'POST':
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+      user = form.save()
+      login(request, user)
+      return redirect('index')
+    else:
+      error_message = 'Invalid sign up - try again'
+  form = UserCreationForm()
+  context = {'form': form, 'error_message': error_message}
+  return render(request, 'registration/signup.html', context)
