@@ -39,9 +39,7 @@ def finchees_detail(request, finch_id):
   })
 
 def add_feeding(request, finch_id):
-	# create the ModelForm using the data in request.POST
   form = FeedingForm(request.POST)
-  # validate the form
   if form.is_valid():
     new_feeding = form.save(commit=False)
     new_feeding.finch_id = finch_id
@@ -49,7 +47,6 @@ def add_feeding(request, finch_id):
   return redirect('detail', finch_id=finch_id)
 
 def assoc_toy(request, finch_id, toy_id):
-  # Note that you can pass a toy's id instead of the whole object
   Finch.objects.get(id=finch_id).toys.add(toy_id)
   return redirect('detail', finch_id=finch_id)
 
