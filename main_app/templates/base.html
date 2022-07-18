@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Finch Collector</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -20,7 +21,7 @@
                 <ul>
                     <li><a href="/" class="left brand-logo">&nbsp;&nbsp;Finch Collector</a></li>
                 </ul>
-                <a class='dropdown-trigger btn right' href='#' data-target='dropdown1'>Drop Me!</a>
+                <a style="font-size:40px;" class='large material-icons dropdown-trigger right' href='#' data-target='dropdown1'>list</a>
                 <ul id='dropdown1' class='dropdown-content'>
                     <li><a href="{% url 'about' %}">About</a></li>
                   {% if user.is_authenticated %}
@@ -52,6 +53,7 @@
   for (var i = 0; i < dropdowns.length; i++){
       M.Dropdown.init(dropdowns[i]);
   }
+
 
 </script>
 </html>
